@@ -11,8 +11,10 @@ const placesList = document.querySelector('.places__list');
 function addCard(alt, link, deleteCardFunction) {
     let card=cardTemplate.querySelector('.card').cloneNode(true);
     let cardImage = card.querySelector('.card__image');
+    let cardTitle = card.querySelector('.card__title');
     cardImage.src = link;
     cardImage.alt = alt;
+    cardTitle.textContent =  alt;
 
     let deleteButton = card.querySelector('.card__delete-button');
     deleteButton.addEventListener('click', deleteCardFunction);
