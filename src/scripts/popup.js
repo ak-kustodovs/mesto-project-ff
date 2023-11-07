@@ -12,7 +12,7 @@ function closePopup(popup) {
 
 function closePopupOnEsc(evt) {
     if (evt.key==='Escape') {
-        let popup = document.querySelector('.popup_is-opened');
+        const popup = document.querySelector('.popup_is-opened');
         closePopup(popup);
     }
 }
@@ -20,7 +20,7 @@ function closePopupOnEsc(evt) {
 function closePopupOnOverlay(evt)  {
     if (evt.target.classList.contains('popup_is-opened'))
     {
-        let popup = document.querySelector('.popup_is-opened');
+    const popup = document.querySelector('.popup_is-opened');
         closePopup(popup);
     }
 }
