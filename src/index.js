@@ -23,7 +23,7 @@ const cardFormLink = cardForm.elements.link;
 
 function addCard(alt, link) {
     console.log(openPopup);
-    let card = createCard(alt,link, deleteCard,likeCard, handleOpenCardImage );
+    const card = createCard(alt,link, deleteCard,likeCard, handleOpenCardImage );
     placesList.append(card);
 }
 
@@ -40,7 +40,7 @@ function handleOpenCardImage(evt) {
 
 function handleClosePopupOnX(evt) {
     if (evt.target.classList.contains('popup__close')){
-        let popup = evt.target.closest('.popup');
+        const popup = evt.target.closest('.popup');
         closePopup(popup);
     }
 }
@@ -71,10 +71,10 @@ cardAddNewButton.addEventListener('click', ()=>{
 
 function handleAddNewCard(evt) {
     evt.preventDefault();
-    let name = cardFormName.value;
-    let link = cardFormLink.value;
-    let card = {name, link};
-    let createdCard = createCard(card.name,card.link, deleteCard,likeCard, handleOpenCardImage );
+    const name = cardFormName.value;
+    const link = cardFormLink.value;
+    const card = {name, link};
+    const createdCard = createCard(card.name,card.link, deleteCard,likeCard, handleOpenCardImage );
     placesList.prepend(createdCard);
     closePopup(cardAddNewPopup);
 }
