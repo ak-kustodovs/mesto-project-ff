@@ -1,0 +1,8 @@
+.popup__error {
+    color: #f00;
+    font-size: 12px;
+}
+
+.popup__error_visible {
+    display: block;
+}

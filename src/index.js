@@ -1,7 +1,8 @@
 import './pages/index.css'; 
-import {initialCards} from './scripts/cards.js';
+import {getCards, getProfile, updateProfile, updateCards} from './scripts/api.js'
 import {createCard, deleteCard,likeCard} from './scripts/card.js'
 import { openPopup,closePopup } from './scripts/popup.js';
+import { enableValidation, clearValidation } from './scripts/validation.js';
 
 const placesList = document.querySelector('.places__list');
 
@@ -15,20 +16,38 @@ const profileEditFormName = profileEditForm.elements.name;
 const profileEditFormJob = profileEditForm.elements.description;
 const profileName = document.querySelector('.profile__title');
 const profileJob = document.querySelector('.profile__description');
+const profileAvatar = document.querySelector('.profile__image');
 const cardAddNewPopup = document.querySelector('.popup_type_new-card');
 const cardAddNewButton = document.querySelector('.profile__add-button');
 const cardForm = document.forms['new-place'];
 const cardFormName = cardForm.elements['place-name'];
 const cardFormLink = cardForm.elements.link;
 
-function addCard(alt, link) {
-    console.log(openPopup);
-    const card = createCard(alt,link, deleteCard,likeCard, handleOpenCardImage );
+const initialCards = await getCards();
+
+const validationConfig =  {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+}
+
+function addCard(data) {
+    const card = createCard(data, deleteCard,likeCard, handleOpenCardImage );
     placesList.append(card);
 }
 
-initialCards.forEach(function(element) {
-    addCard(element.name, element.link);
+Promise.all([getCards, getProfile])
+.then(()=>{
+    initialCards.forEach((element) =>  {
+        addCard(element);
+    });
+    getProfile(profileName, profileJob, profileAvatar);
+})
+.catch((error)=> {
+    console.log(error)
 });
 
 function handleOpenCardImage(evt) {
@@ -52,6 +71,7 @@ document.addEventListener('click', (evt) => {
 profileEditButton.addEventListener('click', () => {
     profileEditFormName.value = profileName.textContent;
     profileEditFormJob.value =  profileJob.textContent;
+    clearValidation(profileEditForm, validationConfig);
     openPopup(profileEditPopup);
 });
 
@@ -59,13 +79,16 @@ function handlProfileEditFormSubmit(evt) {
     evt.preventDefault();
     profileName.textContent = profileEditFormName.value;
     profileJob.textContent = profileEditFormJob.value;
+    updateProfile(profileName.textContent, profileJob.textContent);
     closePopup(profileEditPopup);
+    clearValidation(profileEditForm, validationConfig);
 }
 
 profileEditForm.addEventListener('submit', handlProfileEditFormSubmit);
 
 cardAddNewButton.addEventListener('click', ()=>{
     cardForm.reset();
+    clearValidation(cardForm, validationConfig);
     openPopup(cardAddNewPopup);
 });
 
@@ -73,15 +96,14 @@ function handleAddNewCard(evt) {
     evt.preventDefault();
     const name = cardFormName.value;
     const link = cardFormLink.value;
-    const card = {name, link};
-    const createdCard = createCard(card.name,card.link, deleteCard,likeCard, handleOpenCardImage );
-    placesList.prepend(createdCard);
-    closePopup(cardAddNewPopup);
+    updateCards(name,link)
+    .then(()=>location.reload());
+    
 }
 
 cardForm.addEventListener('submit', handleAddNewCard);
 
-
+enableValidation(validationConfig);
 
 
 
