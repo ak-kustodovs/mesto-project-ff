@@ -19,8 +19,8 @@ function showError(form, input, errorMessage, inputErrorClass, errorClass)  {
 
 function hideError(form, input, inputErrorClass, errorClass) {
     const element = form.querySelector(`.${input.id}-error`);
-    console.log(element);
-        input.classList.remove(inputErrorClass);
+    input.classList.remove(inputErrorClass);
+    element.textContent  = "";
     element.classList.remove(errorClass);
 }
 
