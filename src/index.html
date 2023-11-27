@@ -44,7 +44,7 @@
         placeholder="Имя" id="name-input" minlength="2" maxlength="40" pattern="[a-zA-Zа-яА-Я\sёЁ\-]+"
         data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
         required>
-        <span class="popup__error name-input-error"></span>
+        <span class="popup__error name-input-error "></span>
         <input type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" 
         id="description-input" minlength="2" maxlength="200" pattern="[a-zA-Zа-яА-Я\sёЁ\-]+"
         data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
@@ -105,7 +105,7 @@
 <!--Относится к реализации 4-го спринта-->
 <template id="card-template">
   <!--Про тег темплейт студенты узнают из уроков 4-го спринта-->
-  <li class="places__item card">
+  <li class="places__item card" id="">
     <img class="card__image" src="" alt="" />
     <button type="button" class="card__delete-button"></button>
     <!--Фоновое, инлайном-->

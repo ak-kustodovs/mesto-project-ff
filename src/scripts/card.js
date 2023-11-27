@@ -12,6 +12,7 @@ function createCard(cardData, deleteCardFunction, likeFunction, openPopupFunctio
     const cardLikeButton = card.querySelector('.card__like-button');
     const likeCount = card.querySelector('.card__like-count');
     const cardID = cardData['_id'];
+    card.id = cardID;
     cardImage.src = cardData.link;
     cardImage.alt = cardData.name;
     cardTitle.textContent =  cardData.name;

@@ -31,9 +31,10 @@ const avatarUpdateButton = document.querySelector(".profile__image-container");
 const avatarUpdateForm = document.forms['update-avatar'];
 const avatarFormInput = avatarUpdateForm.elements.link;
 const avatarUpdateFormSubmitButton = avatarUpdateForm.querySelector('.popup__button');
+const promiseArray =[getCards, getProfile];
+const popupCloseButtons = document.querySelectorAll('.popup__close');
 
 
-const initialCards = await getCards();
 
 const validationConfig =  {
     formSelector: '.popup__form',
@@ -54,16 +55,25 @@ function openDeletePopup(id) {
     openPopup(cardDeletePopup);
 }
 
-Promise.all([getCards, getProfile])
-.then(()=>{
-    initialCards.forEach((element) =>  {
-        addCard(element);
-    });
-    getProfile(profileName, profileJob, profileAvatar);
+Promise.all(promiseArray)
+.then(()=> {
+    getProfile()
+    .then(data => {
+        profileName.textContent = data.name;
+        profileJob.textContent = data.about;
+        profileAvatar.style.backgroundImage = `url('${data.avatar}')`;
+    })
+    .catch(error => {
+        console.log(error);
+    })
+    getCards()
+    .then(data=> {
+        data.forEach((card)=>addCard(card));
+    })
+    .catch(error=> {
+        console.log(error);
+    })
 })
-.catch((error)=> {
-    console.log(error)
-});
 
 function handleOpenCardImage(evt) {
     cardPopupImage.src = evt.target.src;
@@ -79,9 +89,11 @@ function handleClosePopupOnX(evt) {
     }
 }
 
-document.addEventListener('click', (evt) => {
-    handleClosePopupOnX(evt);
-});
+popupCloseButtons.forEach((button)=> {
+    button.addEventListener('click', (evt) => {
+        handleClosePopupOnX(evt)});
+})
+
 
 profileEditButton.addEventListener('click', () => {
     profileEditFormName.value = profileName.textContent;
@@ -95,9 +107,8 @@ function handlProfileEditFormSubmit(evt) {
     profileEditSubmitButton.textContent = "Сохранение...";
     updateProfile(profileEditFormName.value, profileEditFormJob.value)
     .then((data)=> {
-        console.log(data);
-        profileName.textContent = profileEditFormName.value;
-        profileJob.textContent = profileEditFormJob.value;
+        profileName.textContent = data.name;
+        profileJob.textContent = data.about;
         closePopup(profileEditPopup);
         clearValidation(profileEditForm, validationConfig);
     })
@@ -123,8 +134,9 @@ function handleAddNewCard(evt) {
     const name = cardFormName.value;
     const link = cardFormLink.value;
     updateCards(name,link)
-    .then(()=> {
-        location.reload();
+    .then((data)=> {
+        placesList.prepend(createCard(data, openDeletePopup,handleLikeCard, handleOpenCardImage));
+        closePopup(cardAddNewPopup);
         cardFormSubmitButton.textContent = "Сохранить";
     })
     .catch((error)=> {
@@ -139,7 +151,9 @@ function handleDeleteCard(evt) {
     evt.preventDefault();
     deleteCard(cardDeleteForm.dataset.id)
     .then(()=>{
-        location.reload();
+        const card = document.querySelector(`[id='${cardDeleteForm.dataset.id}']`);
+        card.remove();
+        closePopup(cardDeletePopup);
     })
     .catch((error) => {
         console.log(error);
@@ -158,8 +172,9 @@ function handleUpdateAvatar(evt) {
     evt.preventDefault();
     avatarUpdateFormSubmitButton.textContent = "Сохранение...";
     updateAvatar(avatarFormInput.value)
-    .then(() => {
-        location.reload();
+    .then((data) => {
+        profileAvatar.style.backgroundImage = `url('${data.avatar}')`;
+        closePopup(avatarPopup);
     })
     .catch((error) => {
         console.log(error);
