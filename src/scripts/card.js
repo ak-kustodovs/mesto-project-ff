@@ -1,10 +1,9 @@
 import {likeCard, unlikeCard} from './api.js';
 
 const cardTemplate = document.querySelector('#card-template').content;
-const myID = "3fd82b71a19a0c85d3b383ec";
 
 
-function createCard(cardData, deleteCardFunction, likeFunction, openPopupFunction) {
+function createCard(cardData, deleteCardFunction, likeFunction, openPopupFunction, myID) {
     const card=cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = card.querySelector('.card__image');
     const cardTitle = card.querySelector('.card__title');
@@ -31,14 +30,16 @@ function createCard(cardData, deleteCardFunction, likeFunction, openPopupFunctio
             deleteCardFunction(cardID)
         });
     }
-
+    const myLikes = cardData.likes.find((element) => element._id === myID);
+    if (myLikes) {
+        cardLikeButton.classList.add('card__like-button_is-active')
+    };
     return card;
 }
 
 function handleLikeCard(button, likeCount, id)  {
    if (button.classList.contains('card__like-button_is-active')) {
     unlikeCard(id)
-    .then(res=>res.json())
     .then((data) => {
         button.classList.remove('card__like-button_is-active');
         likeCount.textContent = data.likes.length;
@@ -49,7 +50,6 @@ function handleLikeCard(button, likeCount, id)  {
    }
    else {
     likeCard(id)
-    .then(res=>res.json())
     .then((data)=> {
         console.log(data);
         button.classList.add('card__like-button_is-active');

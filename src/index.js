@@ -31,9 +31,10 @@ const avatarUpdateButton = document.querySelector(".profile__image-container");
 const avatarUpdateForm = document.forms['update-avatar'];
 const avatarFormInput = avatarUpdateForm.elements.link;
 const avatarUpdateFormSubmitButton = avatarUpdateForm.querySelector('.popup__button');
-const promiseArray =[getCards, getProfile];
+const promiseArray =[getCards(), getProfile()];
 const popupCloseButtons = document.querySelectorAll('.popup__close');
-
+const popups = document.querySelectorAll('.popup');
+let myID='';
 
 
 const validationConfig =  {
@@ -46,7 +47,7 @@ const validationConfig =  {
 }
 
 function addCard(data) {
-    const card = createCard(data, openDeletePopup,handleLikeCard, handleOpenCardImage );
+    const card = createCard(data, openDeletePopup,handleLikeCard, handleOpenCardImage, myID);
     placesList.append(card);
 }
 
@@ -56,24 +57,17 @@ function openDeletePopup(id) {
 }
 
 Promise.all(promiseArray)
-.then(()=> {
-    getProfile()
-    .then(data => {
-        profileName.textContent = data.name;
-        profileJob.textContent = data.about;
-        profileAvatar.style.backgroundImage = `url('${data.avatar}')`;
-    })
-    .catch(error => {
-        console.log(error);
-    })
-    getCards()
-    .then(data=> {
-        data.forEach((card)=>addCard(card));
-    })
-    .catch(error=> {
-        console.log(error);
-    })
+.then(([cards, profile])=> {
+    myID = profile._id;
+    profileName.textContent = profile.name;
+    profileJob.textContent = profile.about;
+    profileAvatar.style.backgroundImage = `url('${profile.avatar}')`;
+    cards.forEach((card)=>addCard(card));
 })
+.catch(error=> {
+    console.log(error);
+});
+
 
 function handleOpenCardImage(evt) {
     cardPopupImage.src = evt.target.src;
@@ -82,16 +76,13 @@ function handleOpenCardImage(evt) {
     openPopup(cardPopup);
 }
 
-function handleClosePopupOnX(evt) {
-    if (evt.target.classList.contains('popup__close')){
-        const popup = evt.target.closest('.popup');
-        closePopup(popup);
-    }
+function handleClosePopupOnX(popup) {
+    closePopup(popup);
 }
 
-popupCloseButtons.forEach((button)=> {
-    button.addEventListener('click', (evt) => {
-        handleClosePopupOnX(evt)});
+popups.forEach((popup)=> {
+    var button = popup.querySelector('.popup__close');
+    button.addEventListener('click', () => handleClosePopupOnX(popup));
 })
 
 
@@ -135,7 +126,7 @@ function handleAddNewCard(evt) {
     const link = cardFormLink.value;
     updateCards(name,link)
     .then((data)=> {
-        placesList.prepend(createCard(data, openDeletePopup,handleLikeCard, handleOpenCardImage));
+        placesList.prepend(createCard(data, openDeletePopup,handleLikeCard, handleOpenCardImage, myID));
         closePopup(cardAddNewPopup);
         cardFormSubmitButton.textContent = "Сохранить";
     })

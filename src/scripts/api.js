@@ -63,7 +63,7 @@ function likeCard(id) {
 function unlikeCard(id) {
     return fetch(`${config.baseUrl}/cards/likes/${id}`, {
     method: 'DELETE',  
-    headers: config.baseUrl,
+    headers: config.headers,
   })
   .then(handleResponse)
 }
